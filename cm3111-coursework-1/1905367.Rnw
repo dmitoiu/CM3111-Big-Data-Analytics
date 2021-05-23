@@ -1,0 +1,1751 @@
+\documentclass[10pt]{article}
+\usepackage{graphicx, verbatim}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amscd}
+\usepackage{lipsum}
+\usepackage{todonotes}
+\usepackage[tableposition=top]{caption}
+\usepackage{ifthen}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{caption}
+\setlength{\textwidth}{6.5in} 
+\setlength{\textheight}{9in}
+\setlength{\oddsidemargin}{0in} 
+\setlength{\evensidemargin}{0in}
+\setlength{\topmargin}{-1.5cm}
+\setlength{\parindent}{0cm}
+\usepackage{setspace}
+\usepackage{float}
+\usepackage{amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage{fancyhdr}
+\usepackage{tabularx}
+
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks   = true, %Colours links instead of ugly boxes
+  urlcolor     = blue, %Colour for external hyperlinks
+  linkcolor    = blue, %Colour of internal links
+  citecolor   = red %Colour of citations
+}
+
+%\fancyhf{}
+\rfoot{Your Name \thepage}
+\singlespacing
+\usepackage[affil-it]{authblk} 
+\usepackage{etoolbox}
+\usepackage{lmodern}
+
+
+% Notice the following package, it will help you cite papers
+\usepackage[backend=bibtex ,sorting=none]{biblatex}
+\bibliography{references}
+
+\begin{filecontents*}{references.bib}
+
+\end{filecontents*}
+
+
+\begin{document}
+
+
+\title{\LARGE Coursework  \\ Big Data Analytics (CM3111)}
+
+\author{Darie-Dragos Mitoiu, \textit{\href{1905367@rgu.ac.uk}{1905367@rgu.ac.uk}}}
+\maketitle
+% \begin{flushleft} \today \end{flushleft} 
+\noindent\rule{16cm}{0.4pt}
+%\underline{\hspace{3cm}
+\ \\
+%\thispagestyle{empty}
+\section{Overview}
+
+This document is designed to help reproduce the analysis of a dataset related to the quality of a product provided by a wine business, the product that will be analysed is the red variant of the Portuguese "Vinho Verde" wine provided by the business, the analysis of this dataset will allow the separation of the good products and the bad products provided by the wine business.
+
+\section{Part \# 1 Data Exploration}
+The objective of analysing the red variant of the Portuguese "Vinho Verde" wine provided by the wine business is to separate the products that have the required chemical composition to be classified as good quality products of those products that do not have the required chemical composition which will be classified as bad quality products.\cite{CORTEZ2009547}
+
+% create subheader 
+\subsection{Dataset Choice}\label{datachoice}
+% if you need sub-sub-header
+%\subsubsection{Demo}
+
+The dataset that will be analysed in this document is a dataset related to a real world problem that can concern a business that provides products like wine, the dataset is related to the red variant of the Portuguese "Vinho Verde" wine, this dataset was obtained from the UCI Machine Learning Repository website which can be found at the link: https://archive.ics.uci.edu/ml/datasets/Wine+Quality , the dataset was obtained on the date 12/10/2019 at 21:05PM. This dataset was chosen in order to provide a classification of the products of the business in cause, the result of this dataset analysis will allow the business to separate the good products of the bad products.
+
+\subsection{Problem Statement \& Data Exploration}\label{dataexp}
+The dataset contains 1599 records having no missing values and 12 features/columns which will represent the chemical composition for the red variant of the Protuguese "Vinho Verde" wine provided by the business in cause, this dataset can be viewed as classification or regression tasks but this document will use a classification task aprroach when the analysis of the dataset will be performed. The aim of this dataset analysis is to build a model that will be able to predict what products are classified as good products or bad products. \\ \\ \\ \\ \\
+
+\subsubsection{Load the data into R}\label{loadData}
+In order to load the data into R the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+# Setting the global options
+options(scipen=999)
+# Get the working directory and store it in a variable called path
+path <- getwd()
+# Set the working directory
+setwd(path)
+# Read the dataset
+df <- read.csv("../data/winequality-red.csv", header=T, sep=";")
+# Store the data in a new variable
+df_clean <- df
+@
+
+<<echo=FALSE,comment=NA>>=
+# Setting the global options
+options(scipen=999)
+# Read the dataset
+df <- read.csv("../data/winequality-red.csv", header=T, sep=";")
+# Store the data in a new variable
+df_clean <- df
+@
+
+\subsubsection{Printing the number of rows and features/columns}\label{rowsFeatures}
+In order to visualise the number of records and the number of features/columns present in the dataset the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+# Show number of records and features/columns
+cat("The red variant of the Vinho Verde wine dataset contains: ", nrow(df), "records.")
+cat("The red variant of the Vinho Verde wine dataset contains", ncol(df), "features/columns.")
+@
+
+The number of records and features/columns present in the dataset are the following:
+<<echo=FALSE,comment=NA>>=
+# Show number of records
+cat("The red variant of the Vinho Verde wine dataset contains: ", nrow(df), "records.")
+cat("The red variant of the Vinho Verde wine dataset contains", ncol(df), "features/columns.")
+@
+
+\subsubsection{Analyse the data}\label{dfNames}
+Once the dataset has been loaded into R and the number of rows/columns has been shown, we need to visualise the names of the features/columns in order to confirm the above information and be able to make the next steps in the dataset exploration.
+
+\ 
+
+In order to visualise the names of the features the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+# Show columns
+names(df)
+@
+
+The names of the features are the following:
+<<echo=FALSE,comment=NA>>=
+# Show columns
+names(df)
+@
+
+As we can see in the above result, the dataset presents 12 features/columns related to the chemical composition of the red variant of the "Vinho Verde" wine, now that we have this information we can make our next steps in exploring and understanding the dataset we are working with.
+
+\ 
+
+After the names of the features/columns has been shown, the next step will be to have a view at the content of the features/columns, a good way to have a basic understanding of the type of data the features are holding would be to visualise the head of the dataset.
+
+\ 
+
+In order to visualise the head of the dataset the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+# Store the original features/columns width in order to restore it later on
+original_names_width <- names(df)
+# Get the column width of the highest feature/column in the dataset,
+# This is done to show the data in an equal manner
+names_width <- max(sapply(names(df), nchar))
+# Format the features/columns based on the highest feature/column and align them to the right
+names(df) <- format(names(df), width=names_width, justify = "right")
+# Show the head of the dataset and align it to centre
+head(format(df, width=names_width, justify = "centre"))
+# Restore the feature/columns width to the original one
+names(df) <- original_names_width
+@
+
+<<echo=FALSE,comment=NA>>=
+original_names_width <- names(df)
+names_width <- max(sapply(names(df), nchar))
+names(df) <- format(names(df), width=names_width, justify = "right")
+head(format(df, width=names_width, justify = "centre"))
+names(df) <- original_names_width
+@
+
+As we can see in the above result, we can have a decent idea about the type of data we are gonna work with, all the features/columns are holding float values, an exception being the quality feature which is an integer and also the string type of data which is not present in our features/columns.
+
+\ \\ \\ \\ \\ \\
+
+In order to visualise the number of records, features/columns of the dataset and the type of the data the above features/columns contain the following command must be executed:
+<<eval=FALSE,comment=NA>>=
+# Show the data types of the relevant features
+str(df)
+@
+
+<<echo=FALSE,comment=NA>>=
+str(df)
+@
+
+We can also see that all the data types of the features/columns are numeric except the quality feature/column which is integer.
+
+\subsection{Pre-processing}\label{preprocess}
+In order to analyse the dataset some pre-processing steps have to be performed to ensure the data is valid and the analysis of the dataset can be performed reducing the number of incorrect results. \\
+
+The steps that will be performed in order to reduce the number of incorrect results are the following:
+\begin{itemize}
+\item The validation of the dataset for any missing values in the features/columns.
+\item The selection of the relevant features/columns for solving the problem and dropping the irrelevant features/columns.
+\item The standardization/normalization of the dataset to ensure for better results and account for noise.
+\end{itemize}
+
+\subsubsection{Validation of the dataset for any missing values}\label{missData}
+In order to check the dataset for any missing values the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+# Count the missing values from the dataset
+na_counts <- sapply(df, function(x) sum(is.na(x)))
+# Show missing values
+na_counts
+@
+
+The result will show that there are no missing values in our features/columns:
+<<echo=FALSE,comment=NA>>=
+# Count the missing values from dataset
+na_counts <- sapply(df, function(x) sum(is.na(x)))
+# Show missing values
+na_counts
+@
+
+The general information present at the link: https://archive.ics.uci.edu/ml/datasets/Wine+Quality specifies that when it comes to missing values the dataset will be in the category "N/A", even though this information is provided we still need to ensure that the dataset does not contain any missing values.
+
+\subsubsection{Selecting relevant features/columns}\label{selectData}
+In order to select the relevant features/columns from the dataset, a features correlation plot has to be created, but before the correlation plot will be created, we must simplify the quality feature.
+
+\ 
+
+In order to simplify the quality we need to separate the good quality products of those that are not good:
+<<eval=FALSE,comment=NA>>=
+cat("Before:", head(df$quality)) # The wine dataset before the simplified quality field
+# Change quality to 1 where the quality is higher than 5 and 0 where it is lower than 5
+df$quality <- ifelse(df$quality > 5.0, 1, 0)
+cat(" After:", head(df$quality)) # The wine dataset after the simplified quality field
+@
+
+<<echo=FALSE,comment=NA>>=
+# The wine dataset before the simplified quality field
+cat("Before:", head(df$quality))
+# Change quality to 1 where the quality is higher than 5 and 0 where it is lower than 5
+df$quality <- ifelse(df$quality > 5.0, 1, 0)
+# The wine dataset after the simplified quality field
+cat(" After:", head(df$quality))
+@
+
+In order to create a correlation plot the following commands must be executed:
+<<warning=FALSE,message=FALSE,eval=FALSE>>=
+library(corrplot) # install.packages("corrplot")
+df_cor_matrix <- cor(df) # Store the dataset using the cor() function
+p <- corrplot(df_cor_matrix, order="AOE", method="color",
+              addCoef.col = "black", number.digits = 1)
+
+@
+
+\begin{figure}[H]
+\begin{center}
+<<echo=FALSE, warning=FALSE,message=FALSE, fig=TRUE, height=6, out.width="4.3in">>=
+
+library(corrplot)
+df_cor_matrix <- cor(df)
+p <- corrplot(df_cor_matrix, order="AOE", method="color", addCoef.col = "black", number.digits = 1)
+
+@
+\caption {Correlation of the features/columns in the wine dataset}
+\label{fig1}
+\end {center}
+\end {figure}
+
+We can notice in the features correlation plot from above that the features that have an influence over the quality feature are:  alcohol, volatile.acidity, sulphates, citric.acid, chlorides and density features.
+
+In order to drop the irrelevant columns the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+# Select only the relevant columns
+df <- subset(df, select = c("volatile.acidity", "citric.acid",
+                            "chlorides", "sulphates",
+                            "density", "alcohol",
+                            "quality"))
+
+# Show columns
+names(df)
+
+@
+
+The dataset will look as the one below after the irrelevant columns have been droped:
+<<echo=FALSE,comment=NA>>=
+# Select only the relevant columns
+df <- subset(df, select = c("volatile.acidity", "citric.acid",
+                            "chlorides", "sulphates", "density",
+                            "alcohol", "quality"))
+
+# Show columns
+names(df)
+
+@
+
+The volatile.acidity is an important feature that will represent the acidity of the wine which should have value not to high or low in order to have an impact on a good quality wine, the chlorides are an important feature because a good quality wine should not present a high number of salt in his composition, the pH (Potential Hidrogen) is a feature/column that will be used to measure the acidity of the wine and the value of this feature should be around 3-4 for a good quality wine, last but not the least the alcohol has been selected because a good quality wine cannot have low amount of alcohol.
+
+\subsubsection{Normalization of the dataset}\label{standardData}
+In order to verify if the dataset would benefit from a normalization method the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+original_names_width <- names(df) # Store the features/columns width
+# Get the width of the highest column
+names_width <- max(sapply(names(df), nchar))
+# Format the features/columns
+names(df) <- format(names(df), width=names_width, justify = "left")
+# Show the dataset summary
+summary(df)
+# Restore features/columns width to the original one
+names(df) <- original_names_width
+@
+
+<<echo=FALSE,comment=NA>>=
+original_names_width <- names(df)
+names_width <- max(sapply(names(df), nchar))
+names(df) <- format(names(df), width=names_width, justify = "left")
+summary(df)
+names(df) <- original_names_width
+@
+
+We can see that the features/columns of our dataset present values between the range 0-1000, this means that our dataset qualifies for standardization/normalization which will perform on our dataset in the following section.
+
+In order to standardize / normalize the dataset the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+# Create normalization function
+normalize <- function(x){
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+
+# Apply the function to all columns of the dataset
+df <- as.data.frame(lapply(df, normalize))
+# Store the original features/columns width in order to restore it later on
+original_names_width <- names(df)
+# Get the column width of the highest feature/column in the dataset,
+# This is done to show the data in an equal manner
+names_width <- max(sapply(names(df), nchar))
+# Format the features/columns based on the highest feature/column and align them to the right
+names(df) <- format(names(df), width=names_width, justify = "right")
+# Show the head of the dataset and align it to centre
+head(format(df, width=names_width, justify = "centre"))
+# Restore the feature/columns width to the original one
+names(df) <- original_names_width
+@
+
+<<echo=FALSE,comment=NA>>=
+# Create normalization function
+normalize <- function(x){
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+
+# Apply the function to all columns of the dataset
+df <- as.data.frame(lapply(df, normalize))
+# Store the original features/columns width in order to restore it later on
+original_names_width <- names(df)
+# Get the column width of the highest feature/column in the dataset,
+# This is done to show the data in an equal manner
+names_width <- max(sapply(names(df), nchar))
+# Format the features/columns based on the highest feature/column and align them to the right
+names(df) <- format(names(df), width=names_width, justify = "right")
+# Show the head of the dataset and align it to centre
+head(format(df, width=names_width, justify = "centre"))
+# Restore the feature/columns width to the original one
+names(df) <- original_names_width
+@
+
+As we can see in the result from above, the dataset presents values in the range 0-1, this means that the normalization has been performed successfully. Normalization have been applied to all features/columns including the label column which contains values of 1 and 0, this situatian allow the normalization of the column without any errors, but the label column should not be normalized.
+
+\ 
+
+After the pre-processing steps have been performed, the data visualisation steps must be performed.
+
+\ \\ \\ \\ \\ \\
+
+\subsubsection{Visualisation of the dataset}\label{visualisationData}
+In order to show the class distribution for the red wine based on quality, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+wine_quality <- as.data.frame(table(df$quality))
+# Set new column names
+colnames(wine_quality) <- c("Quality", "Freq")
+wine_quality
+@
+
+<<echo=FALSE,comment=NA>>=
+# Select only the relevant columns
+wine_quality <- as.data.frame(table(df$quality))
+colnames(wine_quality) <- c("Quality", "Freq")
+wine_quality
+@
+
+In order to produce a class distribution figure the following steps must be performed:
+<<warning=FALSE,message=FALSE,eval=FALSE>>=
+library(ggplot2)
+# Plot the quality / frequency in wine dataset
+p <- ggplot(wine_quality, aes(x = Quality, y = Freq, fill = Quality))
+p <- p + geom_bar(stat="identity") + xlab("Quality") + ylab("Frequency")
+p
+
+@
+
+\begin{figure}[H]
+\begin{center}
+
+<<echo=FALSE, warning=FALSE,message=FALSE, fig=TRUE, fig.height=4.5, fig.width=5>>=
+
+library(ggplot2)
+
+p <- ggplot(wine_quality, aes(x = Quality, y = Freq, fill = Quality))
+p <- p + geom_bar(stat="identity")
+p <- p + xlab("Quality")
+p <- p + ylab("Frequency")
+p
+
+@
+\caption {Quality / Frequency in wine dataset}
+\label{fig1}
+\end {center}
+\end {figure}
+
+As we can see in the figure from above, the good wine represents 855 records of the dataset and the rest of 744 of records do not qualify as a good wine.
+
+\ 
+
+In order to produce a scatter plot figure of alcohol vs volatile acidity, the following steps must be performed:
+<<warning=FALSE,message=FALSE,eval=FALSE>>=
+library(ggplot2)
+
+# Create a copy of the dataset
+df_test <- df
+# Change the quality of the wine with a quality of 1 into Good
+# and the rest having the value of 0 to Bad 
+df_test$quality <- ifelse(df_test$quality == 1, "Good", "Bad")
+
+# Plot the alcohol vs volatile.acidity
+p <- ggplot(df_test, aes(x = alcohol, y = volatile.acidity , color = quality))
+p <- p + geom_point(size=2)
+p <- p + xlab("Alcohol")
+p <- p + ylab("Volatile Acidity")
+p <- p + theme_bw()
+p
+
+@
+
+\begin{figure}[H]
+\begin{center}
+
+<<echo=FALSE, warning=FALSE,message=FALSE, fig=TRUE, fig.height=4.2, fig.width=6>>=
+
+library(ggplot2)
+
+# Create a copy of the dataset
+df_test <- df
+# Change the quality of the wine with a quality of 1 into Good
+# and the rest having the value of 0 to Bad 
+df_test$quality <- ifelse(df_test$quality == 1, "Good", "Bad")
+
+# Plot the alcohol vs volatile acidity
+p <- ggplot(df_test, aes(x = alcohol, y = volatile.acidity , color = quality))
+p <- p + geom_point(size=2)
+p <- p + xlab("Alcohol")
+p <- p + ylab("Volatile Acidity")
+p <- p + theme_bw()
+p
+
+@
+\caption {Alcohol / Volatile Acidity in wine dataset}
+\label{fig2}
+\end {center}
+\end {figure}
+
+As we can see in the figure from above, a high amount of alcohol will result in a higher quality of the wine and a low amount of volatile acidity will also have a good influence over the quality of wine, as the volatile acidity increases the quality of wine also decreases.
+
+\
+
+In order to produce a boxplot for the influence of the chlorides over the wine quality, the following commands must be executed:
+<<warning=FALSE,message=FALSE,eval=FALSE>>=
+
+library(ggplot2)
+
+# Create a copy of the dataset
+df_test <- df
+# Change the quality of the wine with a quality of 1 into Good
+# and the rest having the value of 0 to Bad 
+df_test$quality <- ifelse(df_test$quality == 1, "Good", "Bad")
+
+# Plot the boxplot
+p <- ggplot(df_test, aes(x=quality, y=chlorides))
+p <- p + geom_boxplot() + theme_bw()
+p
+
+@
+
+\begin{figure}[H]
+\begin{center}
+
+<<echo=FALSE, warning=FALSE,message=FALSE, fig=TRUE, fig.height=4.5, fig.width=5>>=
+
+library(ggplot2)
+
+df_test <- df
+df_test$quality <- ifelse(df_test$quality == 1, "Good", "Bad")
+
+p <- ggplot(df_test, aes(x=quality, y=chlorides))
+p <- p + geom_boxplot() + theme_bw()
+p
+
+@
+\caption {Quality / Chlorides in wine dataset}
+\label{fig3}
+\end {center}
+\end {figure}
+
+As we can see in the figure from above, a low amount of salt present in the wine composition will result in a higher quality of wine, a high amount of salt in wine will result in a bad quality of the wine.
+
+\ \\
+
+In order to produce a boxplot for the influence of the citric acid over the wine quality, the following commands must be executed:
+<<warning=FALSE,message=FALSE,eval=FALSE>>=
+
+library(ggplot2)
+
+# Create a copy of the dataset
+df_test <- df
+# Change the quality of the wine with a quality of 1 into Good
+# and the rest having the value of 0 to Bad 
+df_test$quality <- ifelse(df_test$quality == 1, "Good", "Bad")
+
+# Plot the boxplot
+p <- ggplot(df_test, aes(x=quality, y=citric.acid))
+p <- p + geom_boxplot() + theme_bw()
+p
+
+@
+
+\begin{figure}[H]
+\begin{center}
+
+<<echo=FALSE, warning=FALSE,message=FALSE, fig=TRUE, fig.height=5, fig.width=5>>=
+
+library(ggplot2)
+
+df_test <- df
+df_test$quality <- ifelse(df_test$quality == 1, "Good", "Bad")
+
+p <- ggplot(df_test, aes(x=quality, y=citric.acid))
+p <- p + geom_boxplot() + theme_bw()
+p
+
+@
+\caption {Quality / Citric.acid in wine dataset}
+\label{fig4}
+\end {center}
+\end {figure}
+
+As we can see in the above figure, a high amount of citric acid will result in a bad quality of wine, giving to the wine a vinegar taste as the value increases, a low amount of citric acid will result in a good quality of the wine.
+
+\clearpage
+% The title for the reference section is called References 
+
+\section{Part \# 2 Modelling / Classification}
+The prediction model that will be used in order to predict the good products and the bad products provided by the wine business is the "Logistic Regression" Model. This model is used when binary type of data is present in the dataset, in the case in cause, the quality feature/column presents values between 0 and 1, this being said the "Logistic Regression" Model can be used for the prediction of the good products and the bad products provided by the wine business.
+
+\subsection{Training and Testing data sets}\label{trainTest}
+In order to create the "Logistic Regression" Model, the training and testing data sets must be created, the training data set will contain an approximation of 70\% of the records present in the dataset and the training data will contain the remaining data in the dataset.
+
+\ 
+
+In order to create the training and the testing data sets the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+# Import dplyr library with disabled warnings
+library(dplyr, warn.conflicts = FALSE) # install.packages("dplyr")
+
+# Set seed
+set.seed(99)
+
+# Allocate 70% of the wine data set to the training data set
+train <- sample_frac(df, 0.7)
+# Count the records of the training data set
+train_count <- as.numeric(rownames(train))
+# Allocate the remaining 30% of the wine data set to the testing data set
+test <- df[-train_count,]
+@
+
+<<echo=FALSE,comment=NA>>=
+library(dplyr, warn.conflicts = FALSE)
+
+set.seed(99)
+train <- sample_frac(df, 0.7)
+train_count <- as.numeric(rownames(train))
+test <- df[-train_count,]
+
+@
+
+In order to verify the above allocation, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+
+cat("Number of records in the wine data set: ", nrow(df))
+cat("Number of records in the training data set: ", nrow(train))
+cat("Number of records in the testing data set: ", nrow(test))
+cat("Training data set + Testing data set: ", (nrow(train) + nrow(test)))
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+cat("Number of records in the wine data set: ", nrow(df))
+cat("Number of records in the training data set: ", nrow(train))
+cat("Number of records in the testing data set: ", nrow(test))
+cat("Training data set + Testing data set: ", (nrow(train) + nrow(test)))
+
+@
+
+In order to verify the class distribution, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+
+table(train$quality)
+table(test$quality)
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+table(train$quality)
+table(test$quality)
+
+@
+
+As we can see in the above results, the training and testing data allocations have been completed without any errors.
+
+\clearpage
+
+\subsection{Logistic Regression Model}\label{logisticRegressionModel}
+In order to create the Logistic Regression Model and visualise the summary of the model, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+# Create the model using the quality feature and the train data set
+mymodel <- glm(quality ~., family=binomial, data=train)
+# Show summary of the model
+summary(mymodel)
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+mymodel <- glm(quality~., family=binomial, data=train)
+summary(mymodel)
+
+@
+
+In order to evaluate how well the model will make predictions, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+# Get the probabilities
+propos <- predict(mymodel, newdata=test[, -c(7)], type="response")
+# If the probability is bigger than 0.5, assign the value of 1 if not assign 0
+predictions <- ifelse(propos > 0.5, 1, 0)
+# Get the testing error based on the predictions and the quality feature
+test_err <- mean(predictions != test$quality)
+# Show results as percentage
+cat("Accuracy: ", ((1-test_err) * 100), "%")
+cat("   Error: ", (test_err     * 100), "%")
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+propos <- predict(mymodel, newdata=test[, -c(7)], type="response")
+predictions <- ifelse(propos > 0.5, 1, 0)
+test_err <- mean(predictions != test$quality)
+cat("Accuracy: ", ((1-test_err) * 100), "%")
+cat("   Error: ", (test_err * 100), "%")
+
+@
+
+\clearpage
+
+\subsubsection{ROC Curve}\label{rocCurve}
+In order to create the Receiver Operating Characteristic (ROC) Curve, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+
+library(gplots, warn.conflicts = FALSE) # install.packages("gplots")
+library(ROCR, warn.conflicts = FALSE) # install.packages("ROCR")
+# Prediction based on probability and quality feature
+pr <- prediction(propos, test$quality)
+# Performance of the prediction
+prf <- performance(pr, measure="tpr", x.measure = "fpr")
+# Plot the Curve
+plot(prf)
+
+@
+
+\begin{figure}[H]
+\begin{center}
+<<echo=FALSE, warning=FALSE,message=FALSE, fig=TRUE, fig.height=4.2, fig.width=5.5>>=
+
+library(gplots, warn.conflicts = FALSE)
+library(ROCR, warn.conflicts = FALSE)
+pr <- prediction(propos, test$quality)
+prf <- performance(pr, measure="tpr", x.measure = "fpr")
+plot(prf)
+
+@
+\caption {False Positive Rate / True Positive Rate}
+\label{fig5}
+\end {center}
+\end {figure}
+
+
+<<eval=FALSE,comment=NA>>=
+
+# Calculate the Area Under Curve
+auc <- performance(pr, measure = "auc")
+# Get the y value multiplied by 100
+auc <- auc@y.values[[1]] * 100
+auc
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+auc <- performance(pr, measure = "auc")
+auc <- auc@y.values[[1]] * 100
+auc
+
+@
+
+\clearpage
+
+\subsubsection{Correct Predictions}\label{correctPredictions}
+After the creation of the ROC Curve, the calculation of the correct predictions must be performed, this operation will allow the visualisation of the accuracy of the model, the result should be similar to the accuracy result obtained in the previous subsection.
+
+\ 
+
+In order to verify the correct predictions, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+
+# Create a copy of the testing data set
+testU <- test
+# Add a new feature/column called probability to the data set
+testU$probability <- propos
+# Add a new feature/column called prediction to the data set
+testU$prediction <- ifelse(testU$probability > 0.5, 1, 0)
+# Add a new feature/column called correctPrediction to the data set
+testU$correctPrediction <- ifelse(testU$prediction == testU$quality, 1, 0)
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+testU <- test
+testU$probability <- propos
+testU$prediction <- ifelse(testU$probability > 0.5, 1, 0)
+testU$correctPrediction <- ifelse(testU$prediction == testU$quality, 1, 0)
+
+@
+
+In order to visualise the number of correct predictions, the following command must be executed:
+<<eval=FALSE,comment=NA>>=
+
+# Show the number of correct predictions (1=correct prediction, 0=incorrect prediction)
+table(testU$correctPrediction)
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+table(testU$correctPrediction)
+
+@
+
+In order to visualise the head of the testing data set, the following command must be executed:
+<<eval=FALSE,comment=NA>>=
+
+# Show the head of the testing data set, starting from row 15 and column 6
+head(testU[-c(1:15), -c(1:6)])
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+head(testU[-c(1:15), -c(1:6)])
+
+@
+
+In order to calculate the accuracy of the model based on the correct predictions made, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+
+# Calculate the sum of the correct predictions
+total_predictions <- sum(testU$correctPrediction)
+# Divide the sum of the correct predictions to the number of rows in the testing set
+accuracy <- (total_predictions / nrow(testU)) * 100
+# Show the accuracy
+cat("Accuracy: ", accuracy, "%")
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+total_predictions <- sum(testU$correctPrediction)
+accuracy <- (total_predictions / nrow(testU)) * 100
+cat("Accuracy: ", accuracy, "%")
+
+@
+
+\clearpage
+
+\subsubsection{Cross-Validation}\label{crossValidation}
+The cross-validation is a method which will allow an estimation of the model's accuracy, the result provided by the cross validation of the model should be similar to the accuracy result seen in the above subsections~\ref{logisticRegressionModel}.
+
+\ 
+
+This operation will be performed using the training and testing data created in the sub section~\ref{trainTest}, a copy of these data sets will be used, the quality feature/column will be converted to a factor in order to create the cross validation model, the training data set will be used for the creation of the model and the testing data set will be used in order to visualise the performance after the cross validation.
+
+\ 
+
+In order to perform a cross-validation on the model, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+
+# Import caret library
+library(caret, warn.conflicts = FALSE, quietly = TRUE)
+
+# Create copies of the training and testing data sets
+cv_train <- train
+cv_test <- test
+
+# Create train control
+train_control <- trainControl(method="cv", number=10)
+# Convert quality feature/column to factor
+cv_train$quality <- as.factor(cv_train$quality)
+
+# Create cross validation model
+cv_model <- train(quality~.,
+                  data=cv_train,
+                  trControl=train_control,
+                  method="glm",
+                  family=binomial())
+
+# Cross validation predictions excluding the quality feature/column
+cv_predictions <- predict(cv_model, newdata=cv_test[, -c(7)])
+# Cross validation error percentage
+cv_test_err <- mean(cv_predictions != cv_test$quality)
+# Show cross validation model accuracy
+cat("Model Accuracy is: ", round(1-cv_test_err, 4)*100, "%")
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+# Import caret library
+library(caret, warn.conflicts = FALSE, quietly = TRUE)
+
+# Create copies of the training and testing data sets
+cv_train <- train
+cv_test <- test
+
+# Create train control
+train_control <- trainControl(method="cv", number=10)
+# Convert quality feature/column to factor
+cv_train$quality <- as.factor(cv_train$quality)
+
+# Create cross validation model
+cv_model <- train(quality~.,
+                  data=cv_train,
+                  trControl=train_control,
+                  method="glm",
+                  family=binomial())
+
+# Cross validation predictions excluding the quality feature/column
+cv_predictions <- predict(cv_model, newdata=cv_test[, -c(7)])
+# Cross validation error percentage
+cv_test_err <- mean(cv_predictions != cv_test$quality)
+# Show cross validation model accuracy
+cat("Model Accuracy is: ", round(1-cv_test_err, 4)*100, "%")
+
+@
+
+As we can see in the above result, the cross-validation of the logistic regression model will give an estimation of the model's accuracy of 75\%, this result is similar to the one present in the sub section~\ref{logisticRegressionModel}.
+
+\ 
+
+After the cross-validation operation has been peformed on the model, the next step will be to take a look at the current results provided by the logistic regression model and analyse them.
+
+\clearpage
+
+\subsubsection{Logistic Regression Model Results Analysis}\label{results}
+
+In order to analyse the results of the logistic regression model, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+
+# install.packages("xtable")
+library(xtable)
+
+# Get the accuracy value
+lr_model_accuracy <- (1-test_err)*100
+# Get the error value
+lr_model_error <- test_err*100
+# Get the area under curve value
+lr_model_auc <- auc
+# Get the cross validation accuracy value
+lr_model_cv <- (1-cv_test_err)*100
+
+# Create data frame column names
+lr_model_names <- c("model","accuracy", "error", "auc", "crossValidation")
+# Create data frame as a matrix of 5 columns and 1 row
+lr_model <- data.frame(matrix(ncol=5, nrow=1))
+# Assign the column names to the data frame
+colnames(lr_model) <- lr_model_names
+
+# Assign the values to the columns
+lr_model$model <- c("Logistic Regression Model")
+lr_model$accuracy <- lr_model_accuracy
+lr_model$error <- lr_model_error
+lr_model$auc <- lr_model_auc
+lr_model$crossValidation <- lr_model_cv
+
+# Show the data frame as a table
+print(xtable(lr_model))
+
+@
+
+<<echo=FALSE,comment=NA, results="asis">>=
+
+# install.packages("xtable")
+library(xtable)
+
+lr_model_accuracy <- (1-test_err)*100
+lr_model_error <- test_err*100
+lr_model_auc <- auc
+lr_model_cv <- (1-cv_test_err)*100
+
+lr_model_names <- c("model","accuracy", "error", "auc", "crossValidation")
+lr_model <- data.frame(matrix(ncol=5, nrow=1))
+colnames(lr_model) <- lr_model_names
+
+lr_model$model <- c("Logistic Regression Model")
+lr_model$accuracy <- lr_model_accuracy
+lr_model$error <- lr_model_error
+lr_model$auc <- lr_model_auc
+lr_model$crossValidation <- lr_model_cv
+
+print(xtable(lr_model))
+
+@
+
+As we can see in the above table, the logistic regression model obtained an accuracy of 75\% approximative, an error rate of 25\% approximative, the area under curve of 81.1 approximative and last but not the least the cross validation performed on the model presents a value of 75\% approximative.
+
+\ 
+
+The results present in the table above confirm the fact that the model created is not a very good model, having only 75\% accuracy, but is not a very bad model either, this being said, the model would benefit of any improvement operations that could raise the accuracy of the model and reduce the error rate, in the next section the improvement of the model operations would be performed.
+
+\clearpage
+
+\section{Part \# 3 Improving Performance}
+In order to improve the correct prediction of the good products and the bad products provided by the wine business, the data set should be randomly split in order to reduce the error rate and improve the accuracy of the alghoritm. After the data has been split and used with the logistic regression model, a new model should be created in order to make a comparasion of the results provided.
+
+\subsection{Splitting up the training and testing data sets}\label{split}
+In order to split the data, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+
+# Import library
+library(caret)
+
+# Set seed
+set.seed(99)
+
+# Split the data
+splitIndex <- createDataPartition(df$quality, 
+                                  p=.70,
+                                  list=FALSE,
+                                  times=1)
+
+# Alocate 70% of the data to the training set and 30% to the testing set
+training <- df[ splitIndex, ] 
+testing  <- df[-splitIndex, ]
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+library(caret)
+
+set.seed(99)
+
+splitIndex <- createDataPartition(df$quality, 
+                                  p=.70,
+                                  list=FALSE,
+                                  times=1)
+
+training <- df[ splitIndex, ] 
+testing  <- df[-splitIndex, ]
+
+@
+
+In order to visualise the quality in the training data set, the following command must be executed:
+<<eval=FALSE,comment=NA>>=
+
+# Show the training data set
+prop.table(table(training$quality))
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+prop.table(table(training$quality))
+
+@
+
+In order to visualise the quality in the testing data set, the following command must be executed:
+<<eval=FALSE,comment=NA>>=
+
+# Show the testing data set
+prop.table(table(testing$quality))
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+prop.table(table(testing$quality))
+
+@
+
+As we can see in the results above, the spliting operation has been completed succesfully. This method has the same result as the one present in the sub section~\ref{trainTest}.
+
+\clearpage
+
+\subsection{Random Forest Model}\label{randomForestModel}
+In order to create a random forest model using the split training and testing data sets, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+
+# Create train control
+ctrl <- trainControl(method = "cv", number = 5)
+# Convert the quality feature/column to factor
+training$quality <- as.factor(training$quality)
+
+# Create random forest model
+rfModel <- train(quality ~., 
+                 data = training,
+                 method = "rf",
+                 trControl = ctrl)
+
+# Random Forest Model prediction using the testing data set without the quality column
+rf_prediction <- predict(rfModel$finalModel, testing[, -7])
+# Random Forest Model accuracy
+rf_accuracy <- mean(rf_prediction==testing$quality)
+# Show accuracy
+cat("Accuracy: ", round(rf_accuracy, 4)*100, "%")
+
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+ctrl <- trainControl(method = "cv", number = 5)
+training$quality <- as.factor(training$quality)
+
+rfModel <- train(quality ~., 
+                 data = training,
+                 method = "rf",
+                 trControl = ctrl)
+
+rf_prediction <- predict(rfModel$finalModel, testing[, -7])
+rf_accuracy <- mean(rf_prediction==testing$quality)
+cat("Accuracy: ", round(rf_accuracy, 4)*100, "%")
+
+@
+
+In order to visualise the summary of the random forest model, the following command must be executed:
+<<eval=FALSE,comment=NA>>=
+
+# Show summary
+rfModel$finalModel
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+# Show summary
+rfModel$finalModel
+
+@
+
+As we can see in the above result, the type of random forest is the classification type, the number of trees used is 500 and the estimated error rate is 20.98\%.
+
+\clearpage
+
+\subsubsection{Metrics}\label{metrics}
+
+In order to get the metrics of the model, the following commands must be executed:\cite{Lecture6}
+<<eval=FALSE,comment=NA>>=
+
+# Create metrics function
+getMetrics <- function(TP, FP, TN, FN){
+  TPR=TP/(TP+FN);
+  FPR=FP/(FP+TN);
+  TNR=TN/(TN+FP);
+  FNR=FN/(TP+FN);
+  ACC=(TP+TN)/((TP+FN)+(FP+TN));
+  SPC=TN/(FP+TN);
+  SNS=TP/(TP+FN)
+  
+  # Declare metrics names
+  metrics <- c('TPR','FPR','TNR','FNR','ACC', 'SPC','SNS')
+  # Assign metrics values
+  values <- c(TPR,FPR,TNR,FNR,ACC,SPC,SNS)
+  # Create metrics data frame
+  m_df <- data.frame(Metrics=metrics, Values=values)
+  m_df
+}
+
+# Create temporary data set with the model predictions
+tmpSet <- data.frame(Actual=testing$quality, Predicted=rf_prediction)
+# Assign the correct predictions to a new feature/column
+tmpSet$correct <- as.numeric(tmpSet$Actual==tmpSet$Predicted)
+
+# Create the metrics
+tp <- tmpSet[tmpSet$Actual=="1" & tmpSet$Predicted=="1", ]
+fp <- tmpSet[tmpSet$Actual=="0" & tmpSet$Predicted=="1", ]
+
+tn <- tmpSet[tmpSet$Actual=="0" & tmpSet$Predicted=="0", ]
+fn <- tmpSet[tmpSet$Actual=="1" & tmpSet$Predicted=="0", ]
+
+# Get the metrics result
+results <- getMetrics(nrow(tp), nrow(fp), nrow(tn), nrow(fn))
+
+# Show the result as a table
+print(xtable(results))
+
+
+
+@
+
+<<echo=FALSE,comment=NA, results="asis">>=
+
+getMetrics <- function(TP, FP, TN, FN){
+  TPR=TP/(TP+FN);
+  FPR=FP/(FP+TN);
+  TNR=TN/(TN+FP);
+  FNR=FN/(TP+FN);
+  ACC=(TP+TN)/((TP+FN)+(FP+TN));
+  SPC=TN/(FP+TN);
+  SNS=TP/(TP+FN)
+  
+  metrics <- c('TPR','FPR','TNR','FNR','ACC', 'SPC','SNS')
+  values <- c(TPR,FPR,TNR,FNR,ACC,SPC,SNS)
+  m_df <- data.frame(Metrics=metrics, Values=values)
+  m_df
+}
+
+tmpSet <- data.frame(Actual=testing$quality, Predicted=rf_prediction)
+tmpSet$correct <- as.numeric(tmpSet$Actual==tmpSet$Predicted)
+
+tp <- tmpSet[tmpSet$Actual=="1" & tmpSet$Predicted=="1", ]
+fp <- tmpSet[tmpSet$Actual=="0" & tmpSet$Predicted=="1", ]
+
+tn <- tmpSet[tmpSet$Actual=="0" & tmpSet$Predicted=="0", ]
+fn <- tmpSet[tmpSet$Actual=="1" & tmpSet$Predicted=="0", ]
+
+results <- getMetrics(nrow(tp), nrow(fp), nrow(tn), nrow(fn))
+
+print(xtable(results))
+
+@
+
+\clearpage
+
+In order to verify the result from above, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+
+# install.packages("caret")
+library(caret)
+
+# Convert the quality feature/column to a factor
+testing$quality <- as.factor(testing$quality)
+
+# Create confusion matrix using the quality feature/column
+cm_result <- confusionMatrix(rf_prediction, testing[, 7], positive="1")
+
+# Show the confusion matrix result
+cm_result
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+library(caret)
+
+testing$quality <- as.factor(testing$quality)
+cm_result <- confusionMatrix(rf_prediction, testing[, 7], positive="1")
+cm_result
+
+@
+
+As we can see in the result above, the confusion matrix can confirm the manual matrics operation performed in the previous page.
+
+\clearpage
+
+\subsubsection{Undersample}\label{undersample}
+In order to identify if the data set is imbalanced, the class distribution operations must be performed on the original data set.
+
+\ 
+
+In order to verify the class distribution, the following command must be executed:
+<<eval=FALSE,comment=NA>>=
+
+# Training distribution
+table(training$quality)
+
+# Testing distribution
+table(testing$quality)
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+table(training$quality)
+
+table(testing$quality)
+
+@
+
+As we can see in the result above, the class distribution is the same as mentioned in the sub sub section~\ref{visualisationData}. We can notice the fact that there is not a very significant imbalance of the data set, but the data set is not perfectly balanced either, this will result in an increase of the error rate of the model used to predict the good products and the bad products.
+
+\ 
+
+In order to balance the data set, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+
+library(caret) # install.packages("caret")
+library(dplyr) # install.packages("dplyr")
+
+# Set seed
+set.seed(99)
+
+# Create training and testing data sets
+u_splitIndex <- createDataPartition(df$quality, p = .70, list = FALSE, times = 1)
+u_train <- df[ u_splitIndex, ]
+u_test  <- df[-u_splitIndex, ]
+
+# Allocate equal data for the quality feature/column to the training data set
+tSample <- sample_n(u_train[u_train$quality==1, ], nrow(u_train[u_train$quality==0, ]))
+tSample <- rbind(tSample, u_train[u_train$quality==0, ])
+
+# Show distribution
+table(tSample$quality)
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+library(caret)
+library(dplyr)
+set.seed(99)
+
+u_splitIndex <- createDataPartition(df$quality, p = .70, list = FALSE, times = 1)
+u_train <- df[ u_splitIndex, ]
+u_test  <- df[-u_splitIndex, ]
+
+tSample <- sample_n(u_train[u_train$quality==1, ], nrow(u_train[u_train$quality==0, ]))
+tSample <- rbind(tSample, u_train[u_train$quality==0, ])
+
+table(tSample$quality)
+
+@
+
+As we can see in the result above, the equal data allocation has been completed successfully.
+
+\clearpage
+
+\subsubsection{Re-Create Random Forest Model}\label{reCreateModel}
+In order to re-create the random forest model using the balanced training data set, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+
+# Create train control
+ctrl <- trainControl(method = "cv", number = 5)
+# Convert the quality feature/column to factor
+tSample$quality <- as.factor(tSample$quality)
+
+# Create random forest model
+rfModel <- train(quality ~., 
+                 data = tSample,
+                 method = "rf",
+                 trControl = ctrl)
+
+# Random Forest Model prediction using the testing data set without the quality column
+rf_prediction <- predict(rfModel$finalModel, u_test[, -7])
+# Random Forest Model accuracy
+rf_accuracy <- mean(rf_prediction==u_test$quality)
+# Show accuracy
+cat("Accuracy: ", round(rf_accuracy, 4)*100, "%")
+
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+# Create train control
+ctrl <- trainControl(method = "cv", number = 5)
+# Convert the quality feature/column to factor
+tSample$quality <- as.factor(tSample$quality)
+
+# Create random forest model
+rfModel <- train(quality ~., 
+                 data = tSample,
+                 method = "rf",
+                 trControl = ctrl)
+
+# Random Forest Model prediction using the testing data set without the quality column
+rf_prediction <- predict(rfModel$finalModel, u_test[, -7])
+# Random Forest Model accuracy
+rf_accuracy <- mean(rf_prediction==u_test$quality)
+# Show accuracy
+cat("Accuracy: ", round(rf_accuracy, 4)*100, "%")
+
+@
+
+In order to visualise the summary of the random forest model, the following command must be executed:
+<<eval=FALSE,comment=NA>>=
+
+# Show summary
+rfModel$finalModel
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+# Show summary
+rfModel$finalModel
+
+@
+
+As we can see in the above result, the type of random forest is the classification type, the number of trees used is 500 and the estimated error rate is 20.59\%.
+
+\clearpage
+
+\subsubsection{Metrics Undersample}\label{reMetrics}
+In order to visualise the metrics for the undersample data set, the following commands must be executed:\cite{Lecture6}
+<<eval=FALSE,comment=NA>>=
+
+# Create metrics function
+getMetrics <- function(TP, FP, TN, FN){
+  TPR=TP/(TP+FN);
+  FPR=FP/(FP+TN);
+  TNR=TN/(TN+FP);
+  FNR=FN/(TP+FN);
+  ACC=(TP+TN)/((TP+FN)+(FP+TN));
+  SPC=TN/(FP+TN);
+  SNS=TP/(TP+FN)
+  
+  # Declare metrics names
+  metrics <- c('TPR','FPR','TNR','FNR','ACC', 'SPC','SNS')
+  # Assign metrics values
+  values <- c(TPR,FPR,TNR,FNR,ACC,SPC,SNS)
+  # Create metrics data frame
+  m_df <- data.frame(Metrics=metrics, Values=values)
+  m_df
+}
+
+# Create temporary data set with the model predictions
+tmpSet <- data.frame(Actual=u_test$quality, Predicted=rf_prediction)
+# Assign the correct predictions to a new feature/column
+tmpSet$correct <- as.numeric(tmpSet$Actual==tmpSet$Predicted)
+
+# Create the metrics
+re_tp <- tmpSet[tmpSet$Actual=="1" & tmpSet$Predicted=="1", ]
+re_fp <- tmpSet[tmpSet$Actual=="0" & tmpSet$Predicted=="1", ]
+
+re_tn <- tmpSet[tmpSet$Actual=="0" & tmpSet$Predicted=="0", ]
+re_fn <- tmpSet[tmpSet$Actual=="1" & tmpSet$Predicted=="0", ]
+
+# Get the metrics result
+results <- getMetrics(nrow(re_tp), nrow(re_fp), nrow(re_tn), nrow(re_fn))
+
+# Show the result as a table
+print(xtable(results))
+
+
+
+@
+
+<<echo=FALSE,comment=NA, results="asis">>=
+
+getMetrics <- function(TP, FP, TN, FN){
+  TPR=TP/(TP+FN);
+  FPR=FP/(FP+TN);
+  TNR=TN/(TN+FP);
+  FNR=FN/(TP+FN);
+  ACC=(TP+TN)/((TP+FN)+(FP+TN));
+  SPC=TN/(FP+TN);
+  SNS=TP/(TP+FN)
+  
+  metrics <- c('TPR','FPR','TNR','FNR','ACC', 'SPC','SNS')
+  values <- c(TPR,FPR,TNR,FNR,ACC,SPC,SNS)
+  m_df <- data.frame(Metrics=metrics, Values=values)
+  m_df
+}
+
+tmpSet <- data.frame(Actual=u_test$quality, Predicted=rf_prediction)
+tmpSet$correct <- as.numeric(tmpSet$Actual==tmpSet$Predicted)
+
+re_tp <- tmpSet[tmpSet$Actual=="1" & tmpSet$Predicted=="1", ]
+re_fp <- tmpSet[tmpSet$Actual=="0" & tmpSet$Predicted=="1", ]
+
+re_tn <- tmpSet[tmpSet$Actual=="0" & tmpSet$Predicted=="0", ]
+re_fn <- tmpSet[tmpSet$Actual=="1" & tmpSet$Predicted=="0", ]
+
+results <- getMetrics(nrow(re_tp), nrow(re_fp), nrow(re_tn), nrow(re_fn))
+
+print(xtable(results))
+
+@
+
+\clearpage
+
+\subsection{Re-Create Logistic Regression Model}\label{reLogisticModel}
+In order to re-create the Logistic Regression Model using the balanced training data present at the sub sub section~\ref{undersample} and visualise the summary of the model, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+# Create the model using the quality feature and the train data set
+mymodel <- glm(quality ~., family=binomial, data=tSample)
+# Show summary of the model
+summary(mymodel)
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+mymodel <- glm(quality~., family=binomial, data=tSample)
+summary(mymodel)
+
+@
+
+In order to evaluate how well the model will make predictions, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+# Get the probabilities
+propos <- predict(mymodel, newdata=u_test[, -c(7)], type="response")
+# If the probability is bigger than 0.5, assign the value of 1 if not assign 0
+predictions <- ifelse(propos > 0.5, 1, 0)
+# Get the testing error based on the predictions and the quality feature
+test_err <- mean(predictions != u_test$quality)
+# Show results as percentage
+cat("Accuracy: ", ((1-test_err) * 100), "%")
+cat("   Error: ", (test_err     * 100), "%")
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+propos <- predict(mymodel, newdata=u_test[, -c(7)], type="response")
+predictions <- ifelse(propos > 0.5, 1, 0)
+test_err <- mean(predictions != u_test$quality)
+cat("Accuracy: ", ((1-test_err) * 100), "%")
+cat("   Error: ", (test_err * 100), "%")
+
+@
+
+\clearpage
+
+\subsubsection{ROC Curve}\label{rocCurve}
+In order to re-create the Receiver Operating Characteristic (ROC) Curve, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+
+library(gplots, warn.conflicts = FALSE) # install.packages("gplots")
+library(ROCR, warn.conflicts = FALSE) # install.packages("ROCR")
+# Prediction based on probability and quality feature
+pr <- prediction(propos, u_test$quality)
+# Performance of the prediction
+prf <- performance(pr, measure="tpr", x.measure = "fpr")
+# Plot the Curve
+plot(prf)
+
+@
+
+\begin{figure}[H]
+\begin{center}
+<<echo=FALSE, warning=FALSE,message=FALSE, fig=TRUE, fig.height=4.2, fig.width=5.5>>=
+
+library(gplots, warn.conflicts = FALSE)
+library(ROCR, warn.conflicts = FALSE)
+pr <- prediction(propos, u_test$quality)
+prf <- performance(pr, measure="tpr", x.measure = "fpr")
+plot(prf)
+
+@
+\caption {False Positive Rate / True Positive Rate}
+\label{fig5}
+\end {center}
+\end {figure}
+
+
+<<eval=FALSE,comment=NA>>=
+
+# Calculate the Area Under Curve
+auc <- performance(pr, measure = "auc")
+# Get the y value multiplied by 100
+auc <- auc@y.values[[1]] * 100
+auc
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+auc <- performance(pr, measure = "auc")
+auc <- auc@y.values[[1]] * 100
+auc
+
+@
+
+\clearpage
+
+\subsubsection{Cross-Validation}\label{reCrossValidation}
+In order to re-perform a cross-validation on the model, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+
+# Import caret library
+library(caret, warn.conflicts = FALSE, quietly = TRUE)
+
+# Create copies of the balanced training and imbalanced testing data sets
+cv_train <- tSample
+cv_test <- u_test
+
+# Create train control
+train_control <- trainControl(method="cv", number=10)
+# Convert quality feature/column to factor
+cv_train$quality <- as.factor(cv_train$quality)
+
+# Create cross validation model
+cv_model <- train(quality~.,
+                  data=cv_train,
+                  trControl=train_control,
+                  method="glm",
+                  family=binomial())
+
+# Cross validation predictions excluding the quality feature/column
+cv_predictions <- predict(cv_model, newdata=cv_test[, -c(7)])
+# Cross validation error percentage
+cv_test_err <- mean(cv_predictions != cv_test$quality)
+# Show cross validation model accuracy
+cat("Model Accuracy is: ", round(1-cv_test_err, 4)*100, "%")
+
+@
+
+<<echo=FALSE,comment=NA>>=
+
+# Import caret library
+library(caret, warn.conflicts = FALSE, quietly = TRUE)
+
+# Create copies of the training and testing data sets
+cv_train <- tSample
+cv_test <- u_test
+
+# Create train control
+train_control <- trainControl(method="cv", number=10)
+# Convert quality feature/column to factor
+cv_train$quality <- as.factor(cv_train$quality)
+
+# Create cross validation model
+cv_model <- train(quality~.,
+                  data=cv_train,
+                  trControl=train_control,
+                  method="glm",
+                  family=binomial())
+
+# Cross validation predictions excluding the quality feature/column
+cv_predictions <- predict(cv_model, newdata=cv_test[, -c(7)])
+# Cross validation error percentage
+cv_test_err <- mean(cv_predictions != cv_test$quality)
+# Show cross validation model accuracy
+cat("Model Accuracy is: ", round(1-cv_test_err, 4)*100, "%")
+
+@
+
+As we can see in the above result, the cross-validation of the logistic regression model will give a result for the model's accuracy of 75\% approximative, this result is similar to the one present in the sub section~\ref{reLogisticModel}.
+
+\ 
+
+We can notice the fact that using the balanced training data set when creating the logistic regression model did not provide a significant increase or decrease in the model's accuracy, error rate, receiver operating characteristic, area under cuver or cross-validation.
+
+\ 
+
+In the next steps the results of both original creation of the logistic regresion model, random forest model and re-creation of the models will be analysed in order to verify if the operations performed did bring an increase to the models used to analyse the red wine data.
+
+\clearpage
+
+\subsection{Analyse Results}\label{analyseResults}
+The results that will be analysed in this sub section are the results obtained from the original creation of the logistic regression model and the random forest model with the re-creation of the logistic regression model and random forest model using the balanced training data.
+
+\subsubsection{Logistic Regression Model}\label{analyseResultsLogisticModel}
+In order to visualise the results of the logistic regression model and the re-creation of the logisitc regression model, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+
+# install.packages("xtable")
+library(xtable)
+
+# Get the accuracy value
+re_lr_model_accuracy <- (1-test_err)*100
+# Get the error value
+re_lr_model_error <- test_err*100
+# Get the area under curve value
+re_lr_model_auc <- auc
+# Get the cross validation accuracy value
+re_lr_model_cv <- (1-cv_test_err)*100
+
+# Create data frame column names
+lr_model_names <- c("model","accuracy", "error", "auc", "crossValidation")
+# Create data frame as a matrix of 5 columns and 1 row
+lr_model <- data.frame(matrix(ncol=5, nrow=2))
+# Assign the column names to the data frame
+colnames(lr_model) <- lr_model_names
+
+# Assign the values to the columns
+lr_model$model <- c("Logistic Regression Model", "Re-Create Logistic Regression Model")
+lr_model$accuracy <- c(lr_model_accuracy, re_lr_model_accuracy)
+lr_model$error <- c(lr_model_error, re_lr_model_error)
+lr_model$auc <- c(lr_model_auc, re_lr_model_auc)
+lr_model$crossValidation <- c(lr_model_cv, re_lr_model_cv)
+
+# Show the data frame as a table
+print(xtable(lr_model))
+
+@
+
+<<echo=FALSE,comment=NA,results="asis">>=
+
+# install.packages("xtable")
+library(xtable)
+
+# Get the accuracy value
+re_lr_model_accuracy <- (1-test_err)*100
+# Get the error value
+re_lr_model_error <- test_err*100
+# Get the area under curve value
+re_lr_model_auc <- auc
+# Get the cross validation accuracy value
+re_lr_model_cv <- (1-cv_test_err)*100
+
+# Create data frame column names
+lr_model_names <- c("model","accuracy", "error", "auc", "crossValidation")
+# Create data frame as a matrix of 5 columns and 1 row
+lr_model <- data.frame(matrix(ncol=5, nrow=2))
+# Assign the column names to the data frame
+colnames(lr_model) <- lr_model_names
+
+# Assign the values to the columns
+lr_model$model <- c("Logistic Regression Model", "Re-Create Logistic Regression Model")
+lr_model$accuracy <- c(lr_model_accuracy, re_lr_model_accuracy)
+lr_model$error <- c(lr_model_error, re_lr_model_error)
+lr_model$auc <- c(lr_model_auc, re_lr_model_auc)
+lr_model$crossValidation <- c(lr_model_cv, re_lr_model_cv)
+
+# Show the data frame as a table
+print(xtable(lr_model))
+
+@
+
+As we can can see in the table above, there is an increase of performance in the re-creation of the logistic regression model using the balanced training data set, but this increase is not significant.
+
+\clearpage
+
+\subsubsection{Random Forest Model}\label{analyseResultsForestModel}
+In order to visualise the metrics for both original random forest model and the re-created random forest model using the metrics present at the sub sub section~\ref{metrics} and sub sub section~\ref{reMetrics}, the following commands must be executed:
+<<eval=FALSE,comment=NA>>=
+
+# Create metrics function
+getMetricsModel <- function(TP, FP, TN, FN){
+  TPR=TP/(TP+FN);
+  FPR=FP/(FP+TN);
+  TNR=TN/(TN+FP);
+  FNR=FN/(TP+FN);
+  ACC=(TP+TN)/((TP+FN)+(FP+TN));
+  SPC=TN/(FP+TN);
+  SNS=TP/(TP+FN)
+  
+  # Assign metrics values
+  values <- c(TPR,FPR,TNR,FNR,ACC,SPC,SNS)
+  return(values)
+}
+
+# Get the metrics result
+original_results  <- getMetricsModel(nrow(tp), nrow(fp), nrow(tn), nrow(fn))
+re_create_results <- getMetricsModel(nrow(re_tp), nrow(re_fp), nrow(re_tn), nrow(re_fn))
+
+# Create data frame with 8 columns and 2 rows
+rf_results <- data.frame(matrix(ncol=8, nrow=2))
+# Create data frame headers
+rf_results_names <- c("Model", 'TPR','FPR','TNR','FNR','ACC', 'SPC','SNS')
+# Assign column names
+colnames(rf_results) <- rf_results_names
+
+# Assign columns values
+rf_results$Model <- c("Original Random Forest Model", "Re-Created Random Forest Model")
+rf_results$TPR <- c(original_results[1], re_create_results[1])
+rf_results$FPR <- c(original_results[2], re_create_results[2])
+rf_results$TNR <- c(original_results[3], re_create_results[3])
+rf_results$FNR <- c(original_results[4], re_create_results[4])
+rf_results$ACC <- c(original_results[5], re_create_results[5])
+rf_results$SPC <- c(original_results[6], re_create_results[6])
+rf_results$SNS <- c(original_results[7], re_create_results[7])
+
+# Show the result as a table
+print(xtable(rf_results))
+
+
+
+@
+
+<<echo=FALSE,comment=NA, results="asis">>=
+
+# Create metrics function
+getMetricsModel <- function(TP, FP, TN, FN){
+  TPR=TP/(TP+FN);
+  FPR=FP/(FP+TN);
+  TNR=TN/(TN+FP);
+  FNR=FN/(TP+FN);
+  ACC=(TP+TN)/((TP+FN)+(FP+TN));
+  SPC=TN/(FP+TN);
+  SNS=TP/(TP+FN)
+  
+  # Assign metrics values
+  values <- c(TPR,FPR,TNR,FNR,ACC,SPC,SNS)
+  return(values)
+}
+
+# Get the metrics result
+original_results  <- getMetricsModel(nrow(tp), nrow(fp), nrow(tn), nrow(fn))
+re_create_results <- getMetricsModel(nrow(re_tp), nrow(re_fp), nrow(re_tn), nrow(re_fn))
+
+# Create data frame with 8 columns and 2 rows
+rf_results <- data.frame(matrix(ncol=8, nrow=2))
+# Create data frame headers
+rf_results_names <- c("Model", 'TPR','FPR','TNR','FNR','ACC', 'SPC','SNS')
+# Assign column names
+colnames(rf_results) <- rf_results_names
+
+# Assign columns values
+rf_results$Model <- c("Original Random Forest Model", "Re-Created Random Forest Model")
+rf_results$TPR <- c(original_results[1], re_create_results[1])
+rf_results$FPR <- c(original_results[2], re_create_results[2])
+rf_results$TNR <- c(original_results[3], re_create_results[3])
+rf_results$FNR <- c(original_results[4], re_create_results[4])
+rf_results$ACC <- c(original_results[5], re_create_results[5])
+rf_results$SPC <- c(original_results[6], re_create_results[6])
+rf_results$SNS <- c(original_results[7], re_create_results[7])
+
+# Show the result as a table
+print(xtable(rf_results))
+
+@
+
+As we can see in the table above, there is no signification increase or decrease in the performance of the model even after the model has been created using the balanced training data set.
+
+\clearpage
+
+\subsection{Conclusion}\label{conclusion}
+The analysis of the red variant of the Portuguese "Vinho Verde" wine data set was performed using both Logisitic Regression Model and the Random Forest Model, this analysis was performed using both imbalanced and balanced training data, there was not a significant increase or decrease in the models performance using the balanced training data set, the accuracy obtained by the logisitic regression model was of 74.74\% with an error rate of 25.26\% and the accuracy obtained by the random forest model was 81.41\% with and error rate of 20.59\%. The random forest model performed better than the logistic regression model, this being said, the random forest model can be considered a good model, but not a very good model.
+
+% Clear the page and starte a new page for references 
+
+\clearpage
+% The title for the reference section is called References 
+
+\section{References}\label{pubs}
+
+\printbibliography[heading =none]
+
+\clearpage
+
+
+\end{document}

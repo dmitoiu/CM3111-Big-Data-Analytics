@@ -17,7 +17,7 @@ It supports the LaTeX Software System.
 
 ## Installation
 
-The [Graded Unit installation guides] includes instructions for installing the project as part of a local application.
+The [CM3111 Big Data Analytics Project installation guides] includes instructions for installing the project as part of a local application.
 
 ## CM3111 Big Data Analytics Unit
 

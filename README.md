@@ -13,6 +13,7 @@ It supports the LaTeX Software System.
 * [ggplot2](https://ggplot2.tidyverse.org) (required)
 * [pandas](https://pandas.pydata.org) (required)
 * [CX_Freeze](https://cx-freeze.readthedocs.io/en/stable) (optional)
+* [LaTeX](https://www.latex-project.org) (optional)
 * [Git](https://git-scm.com) (optional)
 
 ## Installation

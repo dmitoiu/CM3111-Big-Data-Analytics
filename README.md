@@ -24,7 +24,6 @@ products.**
 
 [Coursework Report](cm3111-coursework-1/1905367.pdf)
 
-
 ## CM3111 Big Data Analytics Project Compile-time Dependencies
 
 * [R](https://www.r-project.org) (4.0.2+ required)

@@ -7,10 +7,11 @@ It supports the LaTeX Software System.
 
 ## Problem Definition
 
-**This document is designed to help reproduce the analysis of a dataset related to the quality of a product 
+**This project is designed to help reproduce the analysis of a dataset related to the quality of a product 
 provided by a wine business, the product that will be analysed is the red variant of the Portuguese "Vinho Verde" 
 wine provided by the business, the analysis of this dataset will allow the separation of the good products and 
-the bad products provided by the wine business.**
+the bad products provided by the wine business by making use of common machine learning algorithms such as the
+Logistic Regression Model and the Random Forest Model.**
 
 ## Story
 

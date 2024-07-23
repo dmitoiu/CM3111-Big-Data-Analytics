@@ -5,6 +5,25 @@
 The CM3111 Big Data Analytics Project is a series of Experiments written in the R Programming Language and Python.
 It supports the LaTeX Software System.
 
+## Problem Definition
+
+**This document is designed to help reproduce the analysis of a dataset related to the quality of a product 
+provided by a wine business, the product that will be analysed is the red variant of the Portuguese "Vinho Verde" 
+wine provided by the business, the analysis of this dataset will allow the separation of the good products and 
+the bad products provided by the wine business.**
+
+## Story
+
+**The objective of analysing the red variant of the Portuguese "Vinho Verde" wine provided by the wine business 
+is to separate the products that have the required chemical composition to be classified as good quality products 
+of those products that do not have the required chemical composition which will be classified as bad quality 
+products.**
+
+## CM3038 Artificial Intelligence for Problem Solving Report
+
+[Coursework Report](cm3111-coursework-1/1905367.pdf)
+
+
 ## CM3111 Big Data Analytics Project Compile-time Dependencies
 
 * [R](https://www.r-project.org) (4.0.2+ required)

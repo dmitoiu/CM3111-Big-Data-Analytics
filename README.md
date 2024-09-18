@@ -20,7 +20,7 @@ is to separate the products that have the required chemical composition to be cl
 of those products that do not have the required chemical composition which will be classified as bad quality 
 products.**
 
-## CM3038 Artificial Intelligence for Problem Solving Report
+## CM3111-Big-Data-Analytics Report
 
 [Coursework Report](cm3111-coursework-1/1905367.pdf)
 
